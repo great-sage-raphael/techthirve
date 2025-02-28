@@ -9,6 +9,7 @@ import GoogleMaps3D from "./components/Google3d";
 import Link from "next/link";
 import Footer from "./components/footer";
 import { FloatingNavDemo } from "./components/navbar";
+import FloatingChatbot from "./components/Chatbot";
 
 
 export default function Home() {
@@ -46,6 +47,9 @@ export default function Home() {
       <footer>
     <Footer/>
     </footer>
+    <div>
+    <FloatingChatbot/>
+    </div>
     </>
   );
 }
