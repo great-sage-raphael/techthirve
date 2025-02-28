@@ -10,27 +10,107 @@ const FloatingChatbot = () => {
     { id: 1, text: "Hi there! How can I help you today?", sender: "bot" }
   ]);
   const [inputValue, setInputValue] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSendMessage = () => {
-    if (inputValue.trim() === '') return;
+  const handleSendMessage = async () => {
+    if (inputValue.trim() === '' || isLoading) return;
     
     // Add user message
-    const newUserMessage = { id: messages.length + 1, text: inputValue, sender: "user" };
+    const userMessageId = messages.length + 1;
+    const newUserMessage = { id: userMessageId, text: inputValue, sender: "user" };
     setMessages([...messages, newUserMessage]);
-    setInputValue('');
     
-    // Simulate bot response after a short delay
-    setTimeout(() => {
+    const userInput = inputValue;
+    setInputValue('');
+    setIsLoading(true);
+    
+    try {
+      // Send message to the chatbot API
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: userInput }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to get response from the chatbot.');
+      }
+      
+      const data = await response.json();
+      
+      // Add bot response
       const botResponse = { 
-        id: messages.length + 2, 
-        text: "Thanks for your message! This is a demo response.", 
+        id: userMessageId + 1, 
+        text: data.response || "Sorry, I couldn't process your request.", 
         sender: "bot" 
       };
+      
       setMessages(prevMessages => [...prevMessages, botResponse]);
-    }, 100);
+    } catch (error) {
+      console.error('Error:', error);
+      // Add error message
+      const errorResponse = { 
+        id: userMessageId + 1, 
+        text: "Sorry, there was an error processing your request. Please try again.", 
+        sender: "bot" 
+      };
+      setMessages(prevMessages => [...prevMessages, errorResponse]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleKeyPress = (e:any) => {
+  const handleForestDataAnalysis = async () => {
+    setIsLoading(true);
+    
+    const analysisRequestMsg = { 
+      id: messages.length + 1, 
+      text: "Analyzing forest data...", 
+      sender: "user" 
+    };
+    
+    setMessages([...messages, analysisRequestMsg]);
+    
+    try {
+      // Request forest data analysis
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to analyze forest data.');
+      }
+      
+      const data = await response.json();
+      
+      // Add analysis response
+      const analysisResponse = { 
+        id: messages.length + 2, 
+        text: data.analysis || "Forest data analysis complete. Here are the results...", 
+        sender: "bot" 
+      };
+      
+      setMessages(prevMessages => [...prevMessages, analysisResponse]);
+    } catch (error) {
+      console.error('Error:', error);
+      // Add error message
+      const errorResponse = { 
+        id: messages.length + 2, 
+        text: "Sorry, there was an error analyzing the forest data. Please try again.", 
+        sender: "bot" 
+      };
+      setMessages(prevMessages => [...prevMessages, errorResponse]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSendMessage();
     }
@@ -49,8 +129,14 @@ const FloatingChatbot = () => {
           >
             {/* Header */}
             <div className="bg-purple-900 text-white p-4 flex items-center justify-between">
-              <h3 className="font-medium">Chat Support</h3>
+              <h3 className="font-medium">Forest AI Assistant</h3>
               <div className="flex space-x-2">
+                <button 
+                  onClick={handleForestDataAnalysis} 
+                  className="p-1 rounded bg-purple-700 hover:bg-purple-600 transition-colors text-xs"
+                >
+                  Analyze Forest Data
+                </button>
                 <button 
                   onClick={() => setIsOpen(false)} 
                   className="p-1 rounded hover:bg-purple-700 transition-colors"
@@ -80,23 +166,33 @@ const FloatingChatbot = () => {
                   {message.text}
                 </div>
               ))}
+              {isLoading && (
+                <div className="flex justify-center items-center py-2">
+                  <div className="animate-pulse flex space-x-2">
+                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                  </div>
+                </div>
+              )}
             </div>
             
             {/* Input area */}
-            <div className="border-t border-gray-500 p-3 flex items-center  bg-stone-950">
+            <div className="border-t border-gray-500 p-3 flex items-center bg-stone-950">
               <input
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Type your message..."
+                disabled={isLoading}
                 className="flex-1 border border-gray-200 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
               <button 
                 onClick={handleSendMessage}
-                disabled={inputValue.trim() === ''}
+                disabled={inputValue.trim() === '' || isLoading}
                 className={`ml-2 p-2 rounded-full ${
-                  inputValue.trim() === '' 
+                  inputValue.trim() === '' || isLoading
                     ? 'bg-gray-200 text-gray-400' 
                     : 'bg-purple-500 text-white hover:bg-purple-600'
                 } transition-colors`}
