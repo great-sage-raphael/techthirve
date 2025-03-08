@@ -2,28 +2,84 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-// Extend Window interface for Google Maps
+// Define Google Maps types to avoid 'any' usage
 declare global {
   interface Window {
-    google: any;
+    google: {
+      maps: {
+        Map: new (element: HTMLElement, options: GoogleMapOptions) => GoogleMap;
+        Marker: new (options: GoogleMarkerOptions) => GoogleMarker;
+        places: {
+          Autocomplete: new (input: HTMLInputElement, options?: AutocompleteOptions) => GoogleAutocomplete;
+        };
+      }
+    };
     initMap: () => void;
   }
 }
 
-// Define types for Google Maps
+// Google Maps type definitions
 interface GoogleLatLng {
   lat: number;
   lng: number;
 }
 
-// Define our own Map type since we can't access the google namespace directly
-type GoogleMap = any;
+interface GoogleLatLngBounds {
+  extend: (latLng: GoogleLatLng) => void;
+}
+
+interface GoogleMapOptions {
+  center: GoogleLatLng;
+  zoom: number;
+  mapTypeId?: string;
+  tilt?: number;
+  heading?: number;
+}
+
+interface GoogleMap {
+  setCenter: (latLng: GoogleLatLng) => void;
+  getCenter: () => {lat: () => number, lng: () => number};
+  setZoom: (zoom: number) => void;
+  getZoom: () => number;
+  fitBounds: (bounds: GoogleLatLngBounds) => void;
+}
+
+interface GoogleMarkerOptions {
+  map: GoogleMap;
+  position: GoogleLatLng;
+  title?: string;
+}
+
+interface GoogleMarker {
+  setMap: (map: GoogleMap | null) => void;
+}
+
+interface AutocompleteOptions {
+  bounds?: GoogleLatLngBounds;
+}
+
+interface GoogleAutocomplete {
+  bindTo: (key: string, map: GoogleMap) => void;
+  addListener: (event: string, callback: () => void) => void;
+  getPlace: () => GooglePlace;
+}
+
+interface GooglePlace {
+  geometry?: {
+    location?: {
+      lat: () => number;
+      lng: () => number;
+    };
+    viewport?: GoogleLatLngBounds;
+  };
+  name?: string;
+}
 
 const NEXT_GOOGLE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_API;
 
 const GoogleMaps = () => {
   const mapRef = useRef<HTMLDivElement | null>(null);
-  const mapInstance = useRef<any>(null);
+  const mapInstance = useRef<GoogleMap | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
 
@@ -56,7 +112,7 @@ const GoogleMaps = () => {
     };
 
     const initializeMap = async () => {
-      if (!window.google?.maps) return;
+      if (!window.google?.maps || !mapRef.current) return;
 
       try {
         console.log("Initializing standard Google Maps");
@@ -147,6 +203,7 @@ const GoogleMaps = () => {
     loadGoogleMaps();
   }, []);
 
+  // Using mapLoaded state to conditionally render a loading indicator
   return (
     <div>
       <div style={{ marginBottom: '15px' }}>
@@ -162,7 +219,7 @@ const GoogleMaps = () => {
           }} 
         />
       </div>
-      <div  className='pb-20'
+      <div className='pb-20'
         ref={mapRef} 
         style={{ 
           width: '1000px', 
@@ -171,6 +228,7 @@ const GoogleMaps = () => {
           overflow: 'hidden' 
         }} 
       />
+      {!mapLoaded && <div>Loading map...</div>}
     </div>
   );
 };

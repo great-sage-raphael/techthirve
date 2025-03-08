@@ -15,7 +15,7 @@ export default function TimelineChart() {
     if (!svgRef.current) return;
 
     const svg = d3.select(svgRef.current);
-    svg.selectAll("*").remove(); // Clear previous drawings
+    svg.selectAll("*").remove(); 
 
     const width = 800;
     const height = 200;
@@ -37,7 +37,7 @@ export default function TimelineChart() {
       .attr("stroke", "gray")
       .attr("stroke-width", 2);
 
-    // Draw the circles for each year
+   
     svg
       .selectAll(".year-circle")
       .data(timelineData)
@@ -47,7 +47,7 @@ export default function TimelineChart() {
       .attr("cy", height / 2)
       .attr("r", 10)
       .attr("fill", "blue")
-      .on("mouseover", function (event, d) {
+      .on("mouseover", function ( ) {
         d3.select(this).attr("fill", "red"); // Highlight on hover
       })
       .on("mouseout", function () {

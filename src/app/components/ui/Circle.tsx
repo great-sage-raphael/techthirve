@@ -1,4 +1,4 @@
-import React, { forwardRef, useContext, useEffect, useImperativeHandle, useRef } from 'react';
+import  { forwardRef, useContext, useEffect, useImperativeHandle, useRef } from 'react';
 import { GoogleMapsContext, latLngEquals } from '@vis.gl/react-google-maps';
 
 interface CircleProps extends google.maps.CircleOptions {
@@ -26,8 +26,18 @@ const useCircle = (props: CircleProps) => {
     center,
     ...circleOptions
   } = props;
-
-  const callbacks = useRef<{ [key: string]: Function | undefined }>({});
+  
+  const callbacks = useRef<{
+    onClick?: (event: google.maps.MapMouseEvent) => void;
+    onDrag?: (event: google.maps.MapMouseEvent) => void;
+    onDragStart?: (event: google.maps.MapMouseEvent) => void;
+    onDragEnd?: (event: google.maps.MapMouseEvent) => void;
+    onMouseOver?: (event: google.maps.MapMouseEvent) => void;
+    onMouseOut?: (event: google.maps.MapMouseEvent) => void;
+    onRadiusChanged?: (radius: number) => void;
+    onCenterChanged?: (center: google.maps.LatLng | null) => void;
+  }>({});
+  
   Object.assign(callbacks.current, {
     onClick,
     onDrag,
@@ -40,17 +50,18 @@ const useCircle = (props: CircleProps) => {
   });
 
   const circle = useRef<google.maps.Circle>(new google.maps.Circle()).current;
+  Circle.displayName = "Circle";
   circle.setOptions(circleOptions);
 
   useEffect(() => {
     if (!center) return;
     if (!latLngEquals(center, circle.getCenter())) circle.setCenter(center);
-  }, [center]);
+  }, [center,circle]);
 
   useEffect(() => {
     if (radius === undefined || radius === null) return;
     if (radius !== circle.getRadius()) circle.setRadius(radius);
-  }, [radius]);
+  }, [radius,circle]);
 
   const map = useContext(GoogleMapsContext)?.map;
 
@@ -62,7 +73,7 @@ const useCircle = (props: CircleProps) => {
 
     circle.setMap(map);
     return () => circle.setMap(null);
-  }, [map]);
+  }, [map,circle]);
 
   useEffect(() => {
     if (!circle) return;

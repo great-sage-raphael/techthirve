@@ -1,5 +1,3 @@
-
-import Image from "next/image";
 import { FloatingNavDemo } from "../components/navbar";
 import { BackgroundBoxes } from "../components/Backgroundbox";
 import { TimelineCarbon } from "../components/catlog";
@@ -8,20 +6,7 @@ import FloatingChatbot from "../components/Chatbot";
 
 
 export default function Home() {
-  const words=[{
-    text:'Carbon',
-  },{
-    text:" Emissions ",
-  },{
-    text:" and ",
-  },{
-    text:" Tree ",
-  },{
-    text:" cover ",
-  },{
-    text:" loss ",
-  }]
-  const content= ['emission','treeloss']
+
   return (
     <>
     <FloatingNavDemo/>

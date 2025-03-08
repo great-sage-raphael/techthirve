@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React from "react";
+
 import { Timeline } from "./ui/timeline";
 import KeralaForestVisualization from "./keralavisualisation";
 import Treeloss from "./Treeloss";
@@ -14,7 +14,7 @@ export function TimelineCarbon() {
             Current Kerala Carbon Footprint Analysis
           </p>
           <p className="text-neutral-800 dark:text-neutral-200 text-xs md:text-sm font-normal mb-4">
-            Our latest data shows significant changes in Kerala's carbon emissions and forest cover compared to previous years. The visualization below highlights critical areas of concern and successful conservation efforts.The carbon emission has significantly increased in the recent years with significant loss of tree covered compared to recent years.
+         {"   Our latest data shows significant changes in Kerala's carbon emissions and forest cover compared to previous years. The visualization below highlights critical areas of concern and successful conservation efforts.The carbon emission has significantly increased in the recent years with significant loss of tree covered compared to recent years."}
           </p>
           <div className="grid grid-cols-2 gap-4">
             <Image
@@ -47,10 +47,10 @@ export function TimelineCarbon() {
       content: (
         <div>
           <p className="text-neutral-800 dark:text-neutral-200 text-lg md:text-xl font-bold mb-4">
-            Kerala's Carbon Emission:Twenty-Year Trend Analysis.
+         {"  Kerala's Carbon Emission:Twenty-Year Trend Analysis."}
           </p>
           <p className="text-neutral-800 dark:text-neutral-200 text-xs md:text-sm font-normal mb-4">
-            This historical data presents a comprehensive twenty-year analysis of Kerala's carbon footprint, showing patterns in emissions from industry, transportation, and changes in forest coverage.
+           {" This historical data presents a comprehensive twenty-year analysis of Kerala's carbon footprint, showing patterns in emissions from industry, transportation, and changes in forest coverage."}
           </p>
           <div className="grid grid-cols-2 gap-4">
             <Image
@@ -93,7 +93,7 @@ export function TimelineCarbon() {
             Current Kerala Carbon Footprint Analysis
           </p>
           <p className="text-neutral-800 dark:text-neutral-200 text-xs md:text-sm font-normal mb-4">
-            Our latest data shows significant changes in Kerala's carbon emissions and forest cover compared to previous years. The visualization below highlights critical areas of concern and successful conservation efforts.The graph show there is significant decrease from the year from 2006-2010 and then a steady increase from the year 2010-2022
+        {"    Our latest data shows significant changes in Kerala's carbon emissions and forest cover compared to previous years. The visualization below highlights critical areas of concern and successful conservation efforts.The graph show there is significant decrease from the year from 2006-2010 and then a steady increase from the year 2010-2022"}
           </p>
           <div className=" ">
           <KeralaForestVisualization/>
@@ -110,9 +110,8 @@ export function TimelineCarbon() {
             Current Kerala Carbon Footprint Analysis
           </p>
           <p className="text-neutral-800 dark:text-neutral-200 text-xs md:text-sm font-normal mb-4">
-            Our latest data shows significant changes in Kerala's carbon emissions and forest cover compared to previous years. The visualization below highlights critical areas of concern and successful conservation efforts.
-          </p>
-          <div className=" ">
+           { "Our latest data shows significant changes in Kerala's carbon emissions and forest cover compared to previous years. The visualization below highlights critical areas of concern and successful conservation efforts."} </p>
+          <div >
           <Treeloss/>
           </div>
         </div>

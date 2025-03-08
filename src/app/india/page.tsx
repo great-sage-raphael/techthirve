@@ -5,7 +5,6 @@ import React, { useState, useEffect } from 'react';
 import { 
   Line, 
   Bar, 
-  Pie,
   LineChart,
   BarChart, 
   XAxis, 
@@ -22,9 +21,6 @@ interface FormattedValue {
   formatted: string;
 }
 
-interface YearlyData {
-  [year: string]: FormattedValue;
-}
 
 interface ForestData {
   density_threshold: number;
@@ -107,19 +103,8 @@ const IndiaForestDashboard: React.FC = () => {
       }))
     : [];
     
-  // Prepare tree cover extent data for pie chart
-  const prepareExtentData = (): { name: string; value: number; formattedValue: string }[] => {
-    if (!forestData?.stats?.tree_cover_extent) return [];
-    
-    const years = Object.keys(forestData.stats.tree_cover_extent);
-    return years.map(year => ({
-      name: year,
-      value: forestData.stats.tree_cover_extent[year].value,
-      formattedValue: forestData.stats.tree_cover_extent[year].formatted
-    }));
-  };
-  
-  const treeExtentData = prepareExtentData();
+
+
   
   // Get forest health status color
   const getHealthStatusColor = (status: string): string => {

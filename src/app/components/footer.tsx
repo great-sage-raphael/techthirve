@@ -8,7 +8,7 @@ const Footer = () => {
         <div className="text-center md:text-left">
           <h2 className="text-2xl font-semibold mb-2">🌍 Sustainable Future</h2>
           <p className="text-gray-400 text-sm">
-            Our mission is to track and reduce carbon emissions, guiding individuals and organizations toward  ''carbon neutrality ''.
+           {" Our mission is to track and reduce carbon emissions, guiding individuals and organizations toward  ''carbon neutrality ''"}.
           </p>
         </div>
 

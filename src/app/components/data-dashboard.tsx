@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Line, Bar } from 'react-chartjs-2';
 import { useSearchParams } from 'next/navigation';
 import { 
@@ -147,13 +147,13 @@ const Dashboard: React.FC<DashboardProps> = ({ locations, densities }) => {
     } else if (locations && locations.length > 0 && !selectedLocation) {
       setSelectedLocation(locations[0]);
     }
-  }, [locations, searchParams]);
+  }, [locations, searchParams,selectedLocation]);
 
   useEffect(() => {
     if (densities && densities.length > 0 && !selectedDensity) {
       setSelectedDensity(densities[0]);
     }
-  }, [densities]);
+  }, [densities,selectedDensity]);
 
   // Fetch districts when locationType changes to 'district'
   useEffect(() => {
@@ -208,7 +208,7 @@ const Dashboard: React.FC<DashboardProps> = ({ locations, densities }) => {
     setIsDropdownOpen(true);
   };
 
-  const fetchData = async (): Promise<void> => {
+  const fetchData = useCallback (async (): Promise<void> => {
     if (!selectedLocation || !selectedDensity) return;
     
     setLoading(true);
@@ -233,20 +233,20 @@ const Dashboard: React.FC<DashboardProps> = ({ locations, densities }) => {
     } finally {
       setLoading(false);
     }
-  };
+  },[selectedLocation, selectedDensity, locationType]);
 
   useEffect(() => {
     if (selectedLocation && selectedDensity) {
       fetchData();
     }
-  }, [selectedLocation, selectedDensity, locationType]);
+  }, [selectedLocation, selectedDensity, locationType,fetchData]);
 
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     fetchData();
   };
 
-  const filteredLocations = getFilteredLocations();
+ 
 
   // Prepare chart data for emissions
   const emissionsChartData = forestData?.yearly_data?.emissions ? {
