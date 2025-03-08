@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { Line, Bar } from 'react-chartjs-2';
 import { useSearchParams } from 'next/navigation';
 import { 
@@ -125,7 +125,8 @@ interface ForestData {
   yearly_data: YearlyDataCategory;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ locations, densities }) => {
+// Create a Client Component that wraps the dashboard
+const DashboardClient: React.FC<DashboardProps> = ({ locations, densities }) => {
   const searchParams = useSearchParams();
   const [locationType, setLocationType] = useState<string>('state');
   const [selectedLocation, setSelectedLocation] = useState<string>('');
@@ -147,13 +148,13 @@ const Dashboard: React.FC<DashboardProps> = ({ locations, densities }) => {
     } else if (locations && locations.length > 0 && !selectedLocation) {
       setSelectedLocation(locations[0]);
     }
-  }, [locations, searchParams,selectedLocation]);
+  }, [locations, searchParams, selectedLocation]);
 
   useEffect(() => {
     if (densities && densities.length > 0 && !selectedDensity) {
       setSelectedDensity(densities[0]);
     }
-  }, [densities,selectedDensity]);
+  }, [densities, selectedDensity]);
 
   // Fetch districts when locationType changes to 'district'
   useEffect(() => {
@@ -208,7 +209,7 @@ const Dashboard: React.FC<DashboardProps> = ({ locations, densities }) => {
     setIsDropdownOpen(true);
   };
 
-  const fetchData = useCallback (async (): Promise<void> => {
+  const fetchData = useCallback(async (): Promise<void> => {
     if (!selectedLocation || !selectedDensity) return;
     
     setLoading(true);
@@ -219,7 +220,6 @@ const Dashboard: React.FC<DashboardProps> = ({ locations, densities }) => {
         ? `https://tech-thrive.onrender.com/data/state/${selectedLocation}/${selectedDensity}`
         : `https://tech-thrive.onrender.com/data/district/${selectedLocation}/${selectedDensity}`;
         
-      
       const response = await fetch(endpoint);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
@@ -233,20 +233,18 @@ const Dashboard: React.FC<DashboardProps> = ({ locations, densities }) => {
     } finally {
       setLoading(false);
     }
-  },[selectedLocation, selectedDensity, locationType]);
+  }, [selectedLocation, selectedDensity, locationType]);
 
   useEffect(() => {
     if (selectedLocation && selectedDensity) {
       fetchData();
     }
-  }, [selectedLocation, selectedDensity, locationType,fetchData]);
+  }, [selectedLocation, selectedDensity, locationType, fetchData]);
 
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     fetchData();
   };
-
- 
 
   // Prepare chart data for emissions
   const emissionsChartData = forestData?.yearly_data?.emissions ? {
@@ -578,7 +576,22 @@ const Dashboard: React.FC<DashboardProps> = ({ locations, densities }) => {
         </div>
       )}
     </div>
-    
+  );
+};
+
+// Loading component for Suspense
+const DashboardLoading = () => (
+  <div className="container mx-auto px-4 py-8 bg-[#0a0a0a] text-gray-100 min-h-screen flex justify-center items-center">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+  </div>
+);
+
+// Main Dashboard component that wraps the client component with Suspense
+const Dashboard: React.FC<DashboardProps> = (props) => {
+  return (
+    <Suspense fallback={<DashboardLoading />}>
+      <DashboardClient {...props} />
+    </Suspense>
   );
 };
 
